@@ -4,15 +4,28 @@
 
 type LoginResponse {
   id: ID!
+  tokens: Tokens!
   username: String!
 }
 
 type Mutation {
   login(password: String!, username: String!): LoginResponse!
+  register(email: String!, password: String!, username: String!): RegisterResponse!
 }
 
 type Query {
   users: [User!]!
+}
+
+type RegisterResponse {
+  id: ID!
+  message: String
+  username: String!
+}
+
+type Tokens {
+  accessToken: String!
+  refreshToken: String!
 }
 
 type User {

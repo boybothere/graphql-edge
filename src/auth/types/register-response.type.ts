@@ -1,14 +1,13 @@
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { Tokens } from "./tokens.type";
 
 @ObjectType()
-export class LoginResponse {
+export class RegisterResponse {
     @Field(() => ID)
     id: number
 
     @Field()
     username: string
 
-    @Field(() => Tokens)
-    tokens: Tokens
+    @Field({ nullable: true }) // make it optional if you want
+    message?: string;
 }

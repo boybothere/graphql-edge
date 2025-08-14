@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -13,7 +14,10 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
     sortSchema: true,
     playground: false,
     plugins: [ApolloServerPluginLandingPageLocalDefault()]
-  }), UsersModule, PrismaModule, AuthModule,],
+  }), UsersModule, PrismaModule, AuthModule,
+  ConfigModule.forRoot({
+    isGlobal: true
+  })],
   controllers: [],
   providers: [],
 })
