@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterArguments } from 'src/users/args/register.args';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -27,11 +28,12 @@ export class AuthService {
             where: { username: args.username }
         })
         if (user) throw new ConflictException("User with given username already exists!")
+        const hashedPassword = await this.hashPassword(args.password)
         const newUser = await this.prisma.user.create({
             data: {
                 username: args.username,
                 email: args.email,
-                password: args.password
+                password: hashedPassword
             }
         })
         const { password, email, ...result } = newUser
@@ -39,6 +41,10 @@ export class AuthService {
             ...result,
             message: "User Registered Successfully!"
         }
+    }
+
+    async hashPassword(password: string) {
+        return bcrypt.hash(password, 10)
     }
 
     async loginUser(username: string, password: string) {
@@ -50,6 +56,8 @@ export class AuthService {
             sub: user.id,
             username
         }
+        const verifyPassword = await bcrypt.compare(password, user.password)
+        if (!verifyPassword) throw new ConflictException("Passwords do not match")
 
         const refreshSecret = this.configService.get<string>('REFRESH_SECRET')
         const accessToken = this.jwtService.sign(payload)
